@@ -1,30 +1,86 @@
 # AIGaikan (IC4 + Qt + Anomalib)
 
 
-**Hardware**: 4× Imaging Source DFK 33UX287 (USB3), PLC with hardware trigger, CONTEC DIO-1616LN-USB.
+4‑camera, PLC‑triggered visual inspection pipeline for continuous extrusion.
+- **Cameras:** Imaging Source **DFK 33UX287** (USB3) ×4
+- **Triggering:** PLC → **hardware trigger** → cameras
+- **DIO:** CONTEC DIO‑1616LN‑USB for OK/NG, heartbeat, and optional inputs
+- **Capture SDK:** IC Imaging Control 4 (IC4)
+- **UI:** PyQt5 (loads `app/ui/mainWidget.ui` if present)
+- **AI:** Anomalib (.ckpt) on PyTorch
 
 
-## Quick Start
+The app is **resilient**: if IC4/cameras/DIO are missing, it falls back to **mock** devices so you can run the full pipeline and UI.
 
 
-1. Install vendor drivers and IC4 runtime + Python SDK.
-2. `pip install -r requirements.txt` (ensure a matching CUDA/PyTorch env).
-3. Put your Anomalib `.ckpt` at `checkpoints/model.ckpt`.
-4. Edit `configs/cameras.yaml` with real serials.
-5. Run: `python run.py`
+---
+## 1) System requirements
+- Windows 10/11 x64
+- Python 3.10 or 3.11 (recommended)
+- (Optional GPU) NVIDIA GPU with CUDA‑capable driver for PyTorch
+- Admin rights to install IC4 and CONTEC drivers
 
 
-If you don’t have cameras connected, the app runs in **mock mode** (random frames) so you can test the UI and end‑to‑end flow.
+---
+## 2) Install vendor drivers & SDKs
 
 
-## Notes
-- For **true real‑time exposure**, wire the PLC hardware trigger to each camera’s Trigger In. The PC only *receives* images and aligns them by `TriggerIndex` read from DIO.
-- Replace the `DIOClient` stub with actual CONTEC calls (ctypes/cffi) to read the trigger counter and drive OK/NG outputs.
-- If `Anomalib` API differs for your version, adjust `InferenceBackend` accordingly.
-- Consider moving inference to a separate **process** if your UI becomes sluggish under GPU load (IPC via ZeroMQ or `multiprocessing.Queue`).
+### Imaging Source IC4
+1. Install IC Imaging Control 4 (runtime + Python SDK) from Imaging Source.
+2. Verify you can import the Python module:
+```python
+import imagingcontrol4 as ic4
+print(ic4.__version__)
+```
+3. Connect each **DFK 33UX287**, note the **serial numbers** for `configs/cameras.yaml`.
 
 
-## Next Steps
-- Add NG-only image/video recording, SQLite/MySQL writer, and recipe switching GUI.
-- Implement cylinder unwrapping (precompute maps; use `cv2.remap`).
-- Add watchdogs and metrics (drop rate %, p50/p95/p99 latencies) in the status bar.
+### CONTEC DIO‑1616LN‑USB
+1. Install CONTEC Digital I/O driver (includes the DLL, e.g. `cdio.dll`).
+2. Confirm the DLL path (e.g., `C:/CONTEC/DIO/cdio.dll`).
+3. You do **not** need a Python wheel; this repo uses `ctypes` to call the DLL.
+
+
+> If you don’t have the hardware/drivers yet, the app will run in **mock mode**.
+
+
+---
+## 3) Create the Python environment
+
+
+### Option A (recommended): **pip venv** with headless OpenCV
+This avoids Qt plugin conflicts.
+```bat
+py -3.10 -m venv .venv
+.venv\\Scripts\\activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+- We use **`opencv-python-headless`**. Do not install `opencv-python` in this env.
+- Install a **CUDA‑matching** PyTorch if you have a GPU. Example (CUDA 12.x):
+```bat
+pip install --index-url https://download.pytorch.org/whl/cu121 torch torchvision torchaudio
+```
+Otherwise CPU:
+```bat
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+```
+
+
+### Option B: **conda‑forge** toolchain (Qt + OpenCV ABI‑stable)
+```bash
+conda create -n aiextr python=3.10 pyqt=5.15 opencv=4.8 numpy=1.26 -c conda-forge
+conda activate aiextr
+pip install -r requirements.txt # will skip OpenCV pins; conda version wins
+```
+> Avoid mixing pip/conda for Qt/OpenCV. Stick to one channel per env.
+
+
+---
+## 4) Project configuration
+
+
+### Cameras
+Edit `configs/cameras.yaml` with your **DFK 33UX287** serials and exposure settings:
+```yaml
+- 本リポジトリの統合コード © あなた（プロジェクト所有者）。
