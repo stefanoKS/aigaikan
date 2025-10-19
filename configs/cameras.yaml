@@ -1,25 +1,26 @@
 cameras:
-- serial: "12345678" # DFK 33UX287 #0
-model: "DFK 33UX287"
-resolution: [1920, 1200]
-pixel_format: "Mono8"
-exposure_us: 2000
-gain_db: 0.0
-- serial: "22345678" # #1
-model: "DFK 33UX287"
-resolution: [1920, 1200]
-pixel_format: "Mono8"
-exposure_us: 2000
-gain_db: 0.0
-- serial: "32345678" # #2
-model: "DFK 33UX287"
-resolution: [1920, 1200]
-pixel_format: "Mono8"
-exposure_us: 2000
-gain_db: 0.0
-- serial: "42345678" # #3
-model: "DFK 33UX287"
-resolution: [1920, 1200]
-pixel_format: "Mono8"
-exposure_us: 2000
-gain_db: 0.0
+  - serial: "12345678"   # DFK 33UX287 #0
+    model: "DFK 33UX287"
+    resolution: [1920, 1200]
+    pixel_format: "Mono8"
+    exposure_us: 2000
+    gain_db: 0.0
+  - serial: "22345678"   # #1
+    model: "DFK 33UX287"
+    resolution: [1920, 1200]
+    pixel_format: "Mono8"
+    exposure_us: 2000
+    gain_db: 0.0
+  - serial: "32345678"   # #2
+    model: "DFK 33UX287"
+    resolution: [1920, 1200]
+    pixel_format: "Mono8"
+    exposure_us: 2000
+    gain_db: 0.0
+  - serial: "42345678"   # #3
+    model: "DFK 33UX287"
+    resolution: [1920, 1200]
+    pixel_format: "Mono8"
+    exposure_us: 2000
+    gain_db: 0.0
+

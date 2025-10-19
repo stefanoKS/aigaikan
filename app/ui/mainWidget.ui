@@ -17,7 +17,7 @@
    <string notr="true">background-color: rgb(93, 86, 87);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="cam1">
+   <widget class="QLabel" name="cam0">
     <property name="geometry">
      <rect>
       <x>290</x>
@@ -33,7 +33,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="cam2">
+   <widget class="QLabel" name="cam1">
     <property name="geometry">
      <rect>
       <x>670</x>
@@ -49,7 +49,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="cam3">
+   <widget class="QLabel" name="cam2">
     <property name="geometry">
      <rect>
       <x>280</x>
@@ -65,7 +65,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="cam4">
+   <widget class="QLabel" name="cam3">
     <property name="geometry">
      <rect>
       <x>670</x>
@@ -434,7 +434,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam1_fps">
+   <widget class="QLabel" name="metric_cam0_fps">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -475,7 +475,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam1_ms">
+   <widget class="QLabel" name="metric_cam0_ms">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -516,7 +516,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam2_ms">
+   <widget class="QLabel" name="metric_cam1_ms">
     <property name="geometry">
      <rect>
       <x>930</x>
@@ -557,7 +557,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam2_fps">
+   <widget class="QLabel" name="metric_cam1_fps">
     <property name="geometry">
      <rect>
       <x>930</x>
@@ -680,7 +680,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam3_ms">
+   <widget class="QLabel" name="metric_cam2_ms">
     <property name="geometry">
      <rect>
       <x>540</x>
@@ -721,7 +721,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam3_fps">
+   <widget class="QLabel" name="metric_cam2_fps">
     <property name="geometry">
      <rect>
       <x>540</x>
@@ -844,7 +844,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam4_fps_2">
+   <widget class="QLabel" name="metric_cam3_ms">
     <property name="geometry">
      <rect>
       <x>930</x>
@@ -885,7 +885,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="metric_cam4_fps">
+   <widget class="QLabel" name="metric_cam3_fps">
     <property name="geometry">
      <rect>
       <x>930</x>
@@ -1008,7 +1008,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="apply_button_2">
+   <widget class="QPushButton" name="quit_button">
     <property name="geometry">
      <rect>
       <x>1410</x>
@@ -1033,7 +1033,7 @@ background-color: rgb(182, 182, 182);</string>
      <string>QUIT</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="checkBox_cam0">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -1058,7 +1058,7 @@ background-color: rgb(182, 182, 182);</string>
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="checkBox_cam1">
     <property name="geometry">
      <rect>
       <x>930</x>
@@ -1083,7 +1083,7 @@ background-color: rgb(182, 182, 182);</string>
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="checkBox_cam2">
     <property name="geometry">
      <rect>
       <x>540</x>
@@ -1108,7 +1108,7 @@ background-color: rgb(182, 182, 182);</string>
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_4">
+   <widget class="QCheckBox" name="checkBox_cam3">
     <property name="geometry">
      <rect>
       <x>930</x>

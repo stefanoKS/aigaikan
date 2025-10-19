@@ -12,6 +12,8 @@ from app.core.preprocessor import preprocess_batch
 from app.core.infer_worker import InferenceBackend
 from app.core.postprocess import fuse_scores, decide
 from app.ui.main_window import MainWindow, np_to_qimage
+from app.core.infer_worker import InferenceBackend, ModelConfig
+
 
 
 def load_yaml(path: str):
@@ -58,7 +60,12 @@ def main():
             cw.start()
             cam_workers.append(cw)
 
-    backend = InferenceBackend(ckpt_path="checkpoints/model.ckpt", device="cuda")(ckpt_path="checkpoints/model.ckpt", device="cuda")
+    try:
+        model_cfg = load_yaml("configs/model.yaml")
+    except FileNotFoundError:
+        model_cfg = {"path": "checkpoints/model.ckpt", "type": "auto"}
+
+    backend = InferenceBackend(ModelConfig(**model_cfg), device="cuda")
 
     def on_batch(trigger_idx: int, frames: list):
         # Preview thumbnails
@@ -90,8 +97,9 @@ def main():
     coordinator.batch_ready.connect(on_batch)
 
     # UI
-    win = MainWindow(bus, ui_path="app/ui/mainWidget.ui")
-    win.resize(1024, 768)
+    win = MainWindow(ui_path="app/ui/mainWidget.ui")
+    win._setup_ui(bus)
+    win.resize(1920, 1080)
     win.show()
 
     jlog("app_start")
