@@ -1,0 +1,47 @@
+# Anomalib inferencer wrapper (Torch .ckpt). Falls back to TorchScript if needed.
+
+from __future__ import annotations
+import numpy as np
+import torch
+from typing import Dict
+
+try:
+    # anomalib >= 1.0 API may differ; adjust as needed
+    from anomalib.deploy import TorchInferencer as AnomTorchInferencer
+except Exception:
+    AnomTorchInferencer = None
+
+
+class InferenceBackend:
+    def __init__(self, ckpt_path: str, device: str = "cuda"):
+        self.device = device if torch.cuda.is_available() else "cpu"
+        self._mode = None
+        self._runner = None
+        self._load(ckpt_path)
+
+    def _load(self, ckpt_path: str):
+        if AnomTorchInferencer is not None:
+            try:
+                self._runner = AnomTorchInferencer(path=ckpt_path, device=self.device)
+                self._mode = "anomalib"
+                return
+            except Exception:
+                pass
+        # Fallback: try torch.jit or torch.load state_dict into a simple model
+        try:
+            self._runner = torch.jit.load(ckpt_path, map_location=self.device)
+            self._mode = "torchscript"
+            return
+        except Exception:
+            raise RuntimeError("Could not load anomalib ckpt nor TorchScript. Please supply a compatible checkpoint.")
+
+    @torch.inference_mode()
+    def predict(self, batch: np.ndarray) -> Dict:
+        # batch: (B,C,H,W) float32 [0..1]
+        t = torch.from_numpy(batch).to(self.device, non_blocking=True)
+        if self._mode == "anomalib":
+            out = self._runner.predict(t)  # returns dict-like per batch item
+            return out
+        # torchscript: define your own forward returning logits/heatmaps
+        o = self._runner(t)
+        return {"scores": o.detach().cpu().numpy()}

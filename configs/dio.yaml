@@ -1,0 +1,16 @@
+# Configure the CONTEC DIO backend. Update dll_paths to match your installation.
+
+dll_paths:
+  - "vendor/cdio.dll"      # try local copy first (optional)
+  - "cdio.dll"             # or rely on system PATH
+# If your SDK uses a different name, add it above (e.g., gpcdio.dll)
+
+device_index: 0
+input_port: 0
+trigger_bit: 0
+
+# Optional OK/NG output mapping (comment out to disable)
+output_port: 0
+ok_bit: 1
+
+poll_hz: 2000

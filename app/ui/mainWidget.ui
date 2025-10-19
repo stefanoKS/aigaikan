@@ -1,0 +1,1535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>1080</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(93, 86, 87);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="cam1">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>240</y>
+      <width>256</width>
+      <height>256</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(97, 255, 53);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam2">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>240</y>
+      <width>256</width>
+      <height>256</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(97, 255, 53);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam3">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>600</y>
+      <width>256</width>
+      <height>256</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(97, 255, 53);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam4">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>600</y>
+      <width>256</width>
+      <height>256</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(97, 255, 53);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="apply_button">
+    <property name="geometry">
+     <rect>
+      <x>1340</x>
+      <y>450</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(220, 220, 220);</string>
+    </property>
+    <property name="text">
+     <string>Apply</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="title1">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>90</y>
+      <width>421</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>45</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>true</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(119, 226, 103);</string>
+    </property>
+    <property name="text">
+     <string>AIGAIKAN</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>500</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>25</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>CAM 1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam2_label">
+    <property name="geometry">
+     <rect>
+      <x>740</x>
+      <y>500</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>25</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>CAM 2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam4_label">
+    <property name="geometry">
+     <rect>
+      <x>740</x>
+      <y>860</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>25</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>CAM 4</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam3_label">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>860</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>25</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>CAM 3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="title2">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>120</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>25</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);
+</string>
+    </property>
+    <property name="text">
+     <string>v0.1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_3">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>270</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>fps</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_4">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>310</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>ms</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam1_fps">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>270</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam1_ms">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>310</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam2_ms">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>310</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam2_fps">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>270</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_9">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>270</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>fps</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_10">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>310</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>ms</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam3_ms">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>670</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam3_fps">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>630</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_13">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>630</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>fps</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_14">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>670</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>ms</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam4_fps_2">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>670</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="metric_cam4_fps">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>630</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 2, 5);</string>
+    </property>
+    <property name="text">
+     <string>100</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_17">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>630</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>fps</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="cam1_label_18">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>670</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferDefault</stylestrategy>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(245, 245, 245);</string>
+    </property>
+    <property name="text">
+     <string>ms</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="apply_button_2">
+    <property name="geometry">
+     <rect>
+      <x>1410</x>
+      <y>850</y>
+      <width>171</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>19</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(225, 0, 4);
+background-color: rgb(182, 182, 182);</string>
+    </property>
+    <property name="text">
+     <string>QUIT</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>240</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>ON/OFF</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>24</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_2">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>240</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>ON/OFF</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>24</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_3">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>600</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>ON/OFF</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>24</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_4">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>600</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>AmarilloUSAF</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>ON/OFF</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>24</width>
+      <height>24</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>1080</x>
+      <y>240</y>
+      <width>101</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="cam1_label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>25</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>CAM 1</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="cam2_label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>25</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>CAM 2</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="cam3_label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>25</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>CAM 3</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="cam4_label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>25</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>CAM 4</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>1180</x>
+      <y>240</y>
+      <width>160</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="ckpt_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>checkpoints:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="ckpt_label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>checkpoints:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="ckpt_label_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>checkpoints:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="ckpt_label_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>AmarilloUSAF</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+         <stylestrategy>PreferDefault</stylestrategy>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(245, 245, 245);</string>
+       </property>
+       <property name="text">
+        <string>checkpoints:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>1340</x>
+      <y>230</y>
+      <width>311</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QComboBox" name="ckpt_selection_cam1">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(235, 235, 235);</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>AIモデル選択</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="ckpt_selection_cam2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(235, 235, 235);</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>AIモデル選択</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="ckpt_selection_cam3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(235, 235, 235);</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>AIモデル選択</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="ckpt_selection_cam4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(235, 235, 235);</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>AIモデル選択</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1920</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
