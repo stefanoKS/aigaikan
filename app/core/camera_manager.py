@@ -3,7 +3,8 @@
 from __future__ import annotations
 import time
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Callable
+
 from PyQt5.QtCore import QThread, pyqtSignal
 import numpy as np
 
@@ -17,12 +18,16 @@ except Exception:
 class CameraConfig:
     serial: str
     model: str = "DFK 33UX287"
-    resolution: tuple[int, int] = (1920, 1200)
-    pixel_format: str = "Mono8"  # or "RGB8" if your model supports
+    resolution: tuple[int, int] = (720, 540)
+    pixel_format: str = "Mono8"  # or "RGB8" if your model supports it
     exposure_us: int = 2000
     gain_db: float = 0.0
     trigger_selector: str = "FrameStart"
     trigger_mode: str = "On"
+    trigger_source: str = "Any"  # e.g., "Line1", "Software", etc.
+    auto_exposure: str = "Off"
+    auto_gain: str = "Off"
+    auto_whiteBalance: str = "Off"
 
 
 class CameraFrame:
@@ -40,7 +45,7 @@ class CameraWorker(QThread):
     frame_signal = pyqtSignal(object)  # emits CameraFrame
     connected = pyqtSignal(bool)
 
-    def __init__(self, cam_id: int, cfg: CameraConfig, shared_trigger_counter):
+    def __init__(self, cam_id: int, cfg: CameraConfig, shared_trigger_counter: Callable[[], int]):
         super().__init__()
         self.cam_id = cam_id
         self.cfg = cfg
@@ -52,18 +57,20 @@ class CameraWorker(QThread):
         self._stop = True
 
     def run(self):
+        # Mock mode when IC4 is not available
         if ic4 is None:
-            # Dev/mock mode: emit blank frames at ~20 FPS for plumbing tests
             self.connected.emit(False)
             while not self._stop:
-                img = (np.random.rand(480, 640) * 255).astype(np.uint8)
+                img = (np.random.rand(720, 540) * 255).astype(np.uint8)
                 ti = self._read_trigger_index()
-                self.frame_signal.emit(CameraFrame(self.cam_id, ti, 0.0, time.perf_counter(), img))
+                self.frame_signal.emit(
+                    CameraFrame(self.cam_id, ti, 0.0, time.perf_counter(), img)
+                )
                 self.msleep(50)
             return
 
-        with ic4.Library.init_context(api_log_level=ic4.LogLevel.WARN):
-            # Open specific device by serial
+        # Real IC4 capture
+        with ic4.Library.init_context(api_log_level=ic4.LogLevel.WARNING):
             devs = ic4.DeviceEnum.devices()
             dev_info = next((d for d in devs if d.serial == self.cfg.serial), None)
             if dev_info is None:
@@ -77,51 +84,121 @@ class CameraWorker(QThread):
             m.try_set_value(ic4.PropId.USER_SET_SELECTOR, "Default")
             m.try_set_value(ic4.PropId.USER_SET_LOAD, 1)
 
-            # Resolution and pixel format (adjust as supported by your camera)
-            try:
-                m.try_set_value(ic4.PropId.VIDEO_FORMAT, f"{self.cfg.pixel_format} {self.cfg.resolution[0]}x{self.cfg.resolution[1]}")
-            except Exception:
-                pass
+            m.try_set_value(ic4.PropId.PIXEL_FORMAT, "Mono8")       # matches "PixelFormat": "Mono8"
+            m.try_set_value(ic4.PropId.WIDTH, 720)                  # "Width": 720
+            m.try_set_value(ic4.PropId.HEIGHT, 540)                 # "Height": 540
+            m.try_set_value(ic4.PropId.OFFSET_AUTO_CENTER, True)    # "OffsetAutoCenter": "On"
 
-            # Exposure/Gain
-            m.try_set_value(ic4.PropId.EXPOSURE_AUTO, "Off")
+            # Exposure / Gain
+            m.try_set_value(ic4.PropId.EXPOSURE_AUTO, self.cfg.auto_exposure)
             m.try_set_value(ic4.PropId.EXPOSURE_TIME, self.cfg.exposure_us)
-            m.try_set_value(ic4.PropId.GAIN_AUTO, "Off")
+            m.try_set_value(ic4.PropId.GAIN_AUTO, self.cfg.auto_gain)
             m.try_set_value(ic4.PropId.GAIN, self.cfg.gain_db)
+            m.try_set_value(ic4.PropId.BALANCE_WHITE_AUTO, self.cfg.auto_whiteBalance)
 
             # Trigger
             m.try_set_value(ic4.PropId.TRIGGER_SELECTOR, self.cfg.trigger_selector)
             m.set_value(ic4.PropId.TRIGGER_MODE, self.cfg.trigger_mode)
+            m.set_value(ic4.PropId.TRIGGER_SOURCE, self.cfg.trigger_source)
 
-            parent = self
+            m.try_set_value(ic4.PropId.TRIGGER_ACTIVATION, "FallingEdge")
+            m.try_set_value(ic4.PropId.TRIGGER_DELAY, 3.1)
+            m.try_set_value(ic4.PropId.TRIGGER_DEBOUNCER, 0.0)
+            m.try_set_value(ic4.PropId.TRIGGER_DENOISE, 0.0)
+            m.try_set_value(ic4.PropId.TRIGGER_MASK, 0.0)
 
-            class Listener(ic4.QueueSinkListener):
-                def sink_connected(self, sink: ic4.QueueSink, image_type: ic4.ImageType, min_buffers_required: int) -> bool:
-                    sink.set_min_num_buffers(max(min_buffers_required, 12))
-                    return True
+            # # 5) (Optional) Strobe – only if you ever move strobe control into camera
+            # m.try_set_value(ic4.PropId.STROBE_OPERATION, "Exposure")
+            # m.try_set_value(ic4.PropId.STROBE_POLARITY, "ActiveLow")
+            # m.try_set_value(ic4.PropId.STROBE_DELAY, 0)
 
-                def frames_queued(self, sink: ic4.QueueSink):
-                    buf = sink.pop_output_buffer()
-                    # Obtain numpy image (method may differ by IC4 version)
-                    try:
-                        img = buf.as_numpy()
-                    except Exception:
-                        # Fallback copy
-                        w, h = buf.image_width, buf.image_height
-                        img = np.frombuffer(buf.get_image_data(), dtype=np.uint8).reshape(h, w)
-
-                    ts_hw = getattr(buf, "timestamp", 0.0)
-                    ti = parent._read_trigger_index()
-                    parent.frame_signal.emit(CameraFrame(parent.cam_id, ti, ts_hw, time.perf_counter(), img))
-
-            listener = Listener()
+            listener = _IC4QueueListener(self)
             sink = ic4.QueueSink(listener)
             grabber.stream_setup(sink)
+
             self.connected.emit(True)
 
-            while not self._stop:
-                self.msleep(1)
+            try:
+                while not self._stop:
+                    self.msleep(1)
+            finally:
+                try:
+                    grabber.stream_stop()
+                except Exception as e:
+                    print("[IC4] stream_stop error:", e)
+                try:
+                    m.set_value(ic4.PropId.TRIGGER_MODE, "Off")
+                except Exception as e:
+                    print("[IC4] trigger off error:", e)
+                try:
+                    grabber.device_close()
+                except Exception as e:
+                    print("[IC4] device_close error:", e)
 
-            grabber.stream_stop()
-            m.set_value(ic4.PropId.TRIGGER_MODE, "Off")
-            grabber.device_close()
+                # drop references so __del__ won’t run after Library is gone
+                m = None
+                dev_info = None
+                devs = None
+                grabber = None
+
+# ---- Processing the IC4 image buffer to handle different formats ----
+
+
+def ic4_buffer_to_numpy(buf) -> np.ndarray | None:
+    """
+    Convert IC4 ImageBuffer to a numpy array using the SDK's numpy_copy().
+    Returns:
+        (H, W) for Mono8
+        (H, W, C) for color formats
+    """
+    try:
+        arr = buf.numpy_copy()  # uses ImageBuffer.numpy_copy from IC4
+    except Exception as e:
+        print("[IC4] numpy_copy() failed:", e)
+        return None
+
+    # For Mono8, shape is (H, W, 1) -> squeeze the last axis
+    if arr.ndim == 3 and arr.shape[2] == 1:
+        arr = arr[:, :, 0]
+
+    return arr
+
+
+# ---- IC4 listener at module level (no Pylance “variable in type expression”) ----
+
+if ic4 is not None:
+
+    class _IC4QueueListener(ic4.QueueSinkListener):
+        def __init__(self, parent: CameraWorker):
+            super().__init__()
+            self._parent = parent
+
+        def sink_connected(self, sink, image_type, min_buffers_required: int) -> bool:
+            # You *can* store image_type if you want, but numpy_copy() doesn’t need it
+            return True
+
+        def frames_queued(self, sink):
+            try:
+                buf = sink.pop_output_buffer()
+                img = ic4_buffer_to_numpy(buf)
+                if img is None:
+                    return
+
+                ts_meta = buf.meta_data  # has device_frame_number, device_timestamp_ns
+                ts_hw = ts_meta.device_timestamp_ns / 1e9  # if you want seconds
+                ti = self._parent._read_trigger_index()
+
+                self._parent.frame_signal.emit(
+                    CameraFrame(self._parent.cam_id, ti, ts_hw, time.perf_counter(), img)
+                )
+
+                # Optional debug:
+                # print(f"[IC4] cam {self._parent.cam_id} frame shape={img.shape}, dtype={img.dtype}")
+
+            except Exception as e:
+                print("[IC4] frames_queued error:", e)
+                return
+
+else:
+    # When ic4 is missing, we never instantiate this anyway
+    _IC4QueueListener = None
