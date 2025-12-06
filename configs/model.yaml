@@ -1,7 +1,13 @@
-# Configure the model file and loader type. Supported:
-#   type: "auto"        → try anomalib for .ckpt, TorchScript for .pt
-#   type: "anomalib"    → force Anomalib TorchInferencer (.ckpt)
-#   type: "torchscript" → force torch.jit.load (.pt/.ts)
-
-path: "checkpoints/model.ckpt"
-type: "auto"
+models:
+  cam1:
+    path: checkpoints/cam1/model.pt
+    type: anomalib          # use Anomalib TorchInferencer (TorchInferencer(path=...))
+  cam2:
+    path: checkpoints/cam2/model.pt
+    type: anomalib
+  cam3:
+    path: checkpoints/cam3/model.pt
+    type: anomalib
+  cam4:
+    path: checkpoints/cam4/model.pt
+    type: anomalib

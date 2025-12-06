@@ -1,41 +1,41 @@
 cameras:
   - serial: "20520102"   # DFK 33UX287 #0
     model: "DFK 33UX287"
-    resolution: [720, 540]
+    resolution: [640, 480]
     pixel_format: "Mono8"
-    exposure_us: 33333.0
-    gain_db: 0.0
+    exposure_us: 1333.0
+    gain_db: 7.0
     trigger_mode: "On"
     auto_exposure: False
     auto_gain: False
     auto_whiteBalance: False
   - serial: "21520031"   # #1
     model: "DFK 33UX287"
-    resolution: [720, 540]
+    resolution: [640, 480]
     pixel_format: "Mono8"
-    exposure_us: 33333.0
+    exposure_us: 1333.0
     trigger_mode: "On"
-    gain_db: 0.0
+    gain_db: 7.0
     auto_exposure: False
     auto_gain: False
     auto_whiteBalance: False
   - serial: "21520024"   # #2
     model: "DFK 33UX287"
-    resolution: [720, 540]
+    resolution: [640, 480]
     pixel_format: "Mono8"
-    exposure_us: 33333.0
+    exposure_us: 1333.0
     trigger_mode: "On"
-    gain_db: 0.0
+    gain_db: 7.0
     auto_exposure: False
     auto_gain: False
     auto_whiteBalance: False
   - serial: "50320434"   # #3
     model: "DFK 33UX287"
-    resolution: [720, 540]
+    resolution: [640, 480]
     pixel_format: "Mono8"
-    exposure_us: 33333.0
+    exposure_us: 1333.0
     trigger_mode: "On"
-    gain_db: 0.0
+    gain_db: 7.0
     auto_exposure: False
     auto_gain: False
     auto_whiteBalance: False
