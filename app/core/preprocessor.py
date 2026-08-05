@@ -1,54 +1,32 @@
-import cv2
-import numpy as np
+"""Fast image conversion used before model inference."""
 
-
-def to_chw_tensor(img: np.ndarray, size=(512, 512)) -> np.ndarray:
-    if img.ndim == 2:
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-    img = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
-    img = img.astype(np.float32) / 255.0
-    img = np.transpose(img, (2, 0, 1))  # CHW
-    return img
-
-
-def preprocess_batch(frames, size=(512, 512)) -> np.ndarray:
-    arr = [to_chw_tensor(f.image, size) for f in frames]
-    return np.stack(arr, axis=0)  # (B,C,H,W) =========================
-# Resize/normalize and optional unwrapping hook
+from __future__ import annotations
 
 import cv2
 import numpy as np
 
 
-
-def to_chw_tensor(img: np.ndarray, size=(512, 512)) -> np.ndarray:
+def to_chw_tensor(
+    img: np.ndarray,
+    size: tuple[int, int] = (280, 280),
+    mean: tuple[float, float, float] = (0.485, 0.456, 0.406),
+    std: tuple[float, float, float] = (0.229, 0.224, 0.225),
+) -> np.ndarray:
+    """Convert a camera image to a contiguous, normalized CHW float32 tensor."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+
     img = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
-    img = img.astype(np.float32) / 255.0
-    img = np.transpose(img, (2, 0, 1))  # CHW
-    return img
+    img = img.astype(np.float32, copy=False) / 255.0
+    img = (img - np.asarray(mean, dtype=np.float32)) / np.asarray(std, dtype=np.float32)
+    return np.ascontiguousarray(np.moveaxis(img, -1, 0))
 
 
-
-def preprocess_batch(frames, size=(512, 512)) -> np.ndarray:
-    arr = [to_chw_tensor(f.image, size) for f in frames]
-    return np.stack(arr, axis=0)  # (B,C,H,W) =========================
-# Resize/normalize and optional unwrapping hook
-
-import cv2
-import numpy as np
-
-
-def to_chw_tensor(img: np.ndarray, size=(512, 512)) -> np.ndarray:
-    if img.ndim == 2:
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-    img = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
-    img = img.astype(np.float32) / 255.0
-    img = np.transpose(img, (2, 0, 1))  # CHW
-    return img
-
-
-def preprocess_batch(frames, size=(512, 512)) -> np.ndarray:
-    arr = [to_chw_tensor(f.image, size) for f in frames]
-    return np.stack(arr, axis=0)  # (B,C,H,W)
+def preprocess_batch(
+    frames: list,
+    size: tuple[int, int] = (280, 280),
+    mean: tuple[float, float, float] = (0.485, 0.456, 0.406),
+    std: tuple[float, float, float] = (0.229, 0.224, 0.225),
+) -> np.ndarray:
+    """Preprocess all synchronized frames once into a BxCxHxW float32 batch."""
+    return np.stack([to_chw_tensor(frame.image, size, mean, std) for frame in frames])

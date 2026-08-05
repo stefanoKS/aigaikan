@@ -1,10 +1,10 @@
 # app/core/dio_client.py
 # CONTEC DIO-1616LN-USB integration via ctypes, with safe fallback to a mock.
 # Uses official API-DIO(WDM) signatures:
-#   short DioInit    (char* DeviceName, short* Id)
-#   short DioExit    (short Id)
-#   short DioInpBit  (short Id, short BitNo, short* Data)
-#   short DioOutBit  (short Id, short BitNo, unsigned char Data)
+#   long DioInit    (char* DeviceName, short* Id)
+#   long DioExit    (short Id)
+#   long DioInpBit  (short Id, short BitNo, unsigned char* Data)
+#   long DioOutBit  (short Id, short BitNo, unsigned char Data)
 
 from __future__ import annotations
 import ctypes as C
@@ -70,14 +70,14 @@ class _ContecDLL:
             f.restype = restype
             f.argtypes = argtypes
 
-        # short DioInit(char* DeviceName, short* Id)
-        set_sig(self.DioInit, C.c_short, C.c_char_p, C.POINTER(C.c_short))
-        # short DioExit(short Id)
-        set_sig(self.DioExit, C.c_short, C.c_short)
-        # short DioInpBit(short Id, short BitNo, short* Data)
-        set_sig(self.DioInpBit, C.c_short, C.c_short, C.c_short, C.POINTER(C.c_short))
-        # short DioOutBit(short Id, short BitNo, unsigned char Data)
-        set_sig(self.DioOutBit, C.c_short, C.c_short, C.c_short, C.c_ubyte)
+        # long DioInit(char* DeviceName, short* Id)
+        set_sig(self.DioInit, C.c_long, C.c_char_p, C.POINTER(C.c_short))
+        # long DioExit(short Id)
+        set_sig(self.DioExit, C.c_long, C.c_short)
+        # long DioInpBit(short Id, short BitNo, unsigned char* Data)
+        set_sig(self.DioInpBit, C.c_long, C.c_short, C.c_short, C.POINTER(C.c_ubyte))
+        # long DioOutBit(short Id, short BitNo, unsigned char Data)
+        set_sig(self.DioOutBit, C.c_long, C.c_short, C.c_short, C.c_ubyte)
 
 
 class BaseDIO:
@@ -104,8 +104,9 @@ class RealDIO(BaseDIO):
         print("[DIO] Initializing RealDIO with config:", cfg)
         self.cfg = cfg
         self._dll = _ContecDLL(cfg.dll_paths)
-        self._stop = False
+        self._stop = threading.Event()
         self._lock = threading.Lock()
+        self._io_lock = threading.Lock()
         self._trigger_index = 0
         self._last_bit = 0
         self._id = C.c_short(-1)
@@ -120,20 +121,26 @@ class RealDIO(BaseDIO):
         if ret != 0:
             raise RuntimeError(f"DioInit failed rc={ret}")
 
-        self._t = threading.Thread(target=self._run_poll_edges, daemon=True)
+        self._t: threading.Thread | None = None
 
     def start(self):
         print("[DIO] RealDIO starting poll thread")
-        self._stop = False
+        if self._t is not None and self._t.is_alive():
+            return
+        self._stop.clear()
+        self._t = threading.Thread(target=self._run_poll_edges, daemon=True)
         self._t.start()
 
     def stop(self):
         print("[DIO] RealDIO stopping")
-        self._stop = True
-        self._t.join(timeout=1)
+        self._stop.set()
+        if self._t is not None:
+            self._t.join(timeout=1)
         if self._dll.DioExit is not None and self._id.value >= 0:
-            ret = self._dll.DioExit(self._id)
+            with self._io_lock:
+                ret = self._dll.DioExit(self._id)
             print(f"[DIO] DioExit ret={ret}")
+            self._id = C.c_short(-1)
 
     # --- Helpers for bit index mapping (port, bit) -> logical BitNo ----
     def _bit_no(self, port: int, bit: int) -> int:
@@ -148,8 +155,9 @@ class RealDIO(BaseDIO):
             return 0
 
         bit_no = self._bit_no(port, bit)
-        data = C.c_short(0)
-        ret = self._dll.DioInpBit(self._id, C.c_short(bit_no), C.byref(data))
+        data = C.c_ubyte(0)
+        with self._io_lock:
+            ret = self._dll.DioInpBit(self._id, C.c_short(bit_no), C.byref(data))
         if ret != 0:
             # On error, just treat as 0
             # print(f"[DIO] DioInpBit error ret={ret} for bitNo={bit_no}")
@@ -166,20 +174,21 @@ class RealDIO(BaseDIO):
 
         bit_no = self._bit_no(self.cfg.output_port, self.cfg.ok_bit)
         val = 1 if ok else 0
-        ret = self._dll.DioOutBit(self._id, C.c_short(bit_no), C.c_ubyte(val))
+        with self._io_lock:
+            ret = self._dll.DioOutBit(self._id, C.c_short(bit_no), C.c_ubyte(val))
         # Uncomment for verbose logging:
         # print(f"[DIO] DioOutBit(Id={self._id.value}, BitNo={bit_no}, Data={val}) ret={ret}")
 
     def _run_poll_edges(self):
         interval = max(1.0 / float(self.cfg.poll_hz), 0.0005)
         print(f"[DIO] Polling DI at ~{self.cfg.poll_hz} Hz (interval {interval*1000:.3f} ms)")
-        while not self._stop:
+        while not self._stop.is_set():
             b = self._read_input_bit(self.cfg.input_port, self.cfg.trigger_bit)
             if b and not self._last_bit:
                 with self._lock:
                     self._trigger_index += 1
             self._last_bit = b
-            time.sleep(interval)
+            self._stop.wait(interval)
 
     def read_trigger_index(self) -> int:
         with self._lock:
@@ -207,7 +216,8 @@ class RealDIO(BaseDIO):
         for cam_id, ok in enumerate(per_cam_ok):
             bit_no = self._bit_no(self.cfg.output_port, base_bit + cam_id)
             val = 1 if ok else 0
-            ret = self._dll.DioOutBit(self._id, C.c_short(bit_no), C.c_ubyte(val))
+            with self._io_lock:
+                ret = self._dll.DioOutBit(self._id, C.c_short(bit_no), C.c_ubyte(val))
             # Uncomment for debugging:
             # print(f"[DIO] set_cam_ok cam{cam_id}: bitNo={bit_no}, val={val}, ret={ret}")
 

@@ -1,34 +1,55 @@
 from __future__ import annotations
 import sys
 import os
-import time
+import ctypes
 from datetime import datetime
 from pathlib import Path
 
 import yaml
-import numpy as np
-import psutil
-import torch
 import cv2
 
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtWidgets import QApplication
 
-from app.core.logger import jlog, tb, setup_logging
+from app.core.logger import jlog, setup_logging
 from app.core.results_bus import ResultsBus
 from app.core.camera_manager import CameraWorker, CameraConfig
 from app.core.trigger_coordinator import TriggerCoordinator
 from app.core.dio_client import DIOConfig, make_dio
-from app.core.preprocessor import preprocess_batch
-from app.core.postprocess import fuse_scores, decide
 from app.ui.main_window import MainWindow, np_to_qimage
-from app.core.infer_worker import InferenceBackend, ModelConfig
+from app.core.infer_worker import BatchInferenceWorker, InferenceBackend, ModelConfig
 
 # ---- Process priority (Windows) ----
-p = psutil.Process(os.getpid())
-p.nice(psutil.HIGH_PRIORITY_CLASS)
+if os.name == "nt":
+    try:
+        ctypes.windll.kernel32.SetPriorityClass(
+            ctypes.windll.kernel32.GetCurrentProcess(),
+            0x00000080,  # HIGH_PRIORITY_CLASS
+        )
+    except OSError:
+        pass
 
 # ---- Where to save logged images when checkbox is ON ----
 LOG_IMAGE_DIR = Path("logs") / "captures"
+
+
+class BatchInferenceController(QObject):
+    """Main-thread bridge between synchronized frames and the inference QThread."""
+
+    requested = pyqtSignal(int, list)
+
+    def __init__(self, on_completed, on_failed):
+        super().__init__()
+        self._on_completed = on_completed
+        self._on_failed = on_failed
+
+    @pyqtSlot(int, list, list, float, bool, float)
+    def completed(self, trigger_idx, frames, scores, fused, ok, elapsed_ms):
+        self._on_completed(trigger_idx, frames, scores, fused, ok, elapsed_ms)
+
+    @pyqtSlot(int, str)
+    def failed(self, trigger_idx, message):
+        self._on_failed(trigger_idx, message)
 
 
 def load_yaml(path: str):
@@ -111,72 +132,18 @@ def main():
     write_config_enabled = False
     write_collect_data_enabled = False
 
-    def to_scalar(val) -> float:
-        """Convert torch.Tensor / numpy / list / scalar to a single float."""
-        if isinstance(val, torch.Tensor):
-            val = val.detach().cpu().numpy()
-        return float(np.array(val).reshape(-1)[0])
-
-    # ---- Batch callback: per-camera model inference ----
-    def on_batch(trigger_idx: int, frames: list):
+    def on_inference_completed(
+        trigger_idx: int,
+        frames: list,
+        per_cam_scores: list[float],
+        fused: float,
+        ok: bool,
+        elapsed_ms: float,
+    ):
         nonlocal write_config_enabled
         nonlocal write_collect_data_enabled
 
-        # Preview thumbnails in UI
-        for f in frames:
-            bus.frame_preview.emit(trigger_idx, f.cam_id, np_to_qimage(f.image))
-
-        per_cam_scores: list[float] = []
-        frame_scores: list[tuple] = []  # list of (CameraFrame, score)
-        start_ts = time.perf_counter()
-
-        # Process each camera's frame with its own model
-        for f in frames:
-            cam_id = f.cam_id
-            backend = backends.get(cam_id)
-            if backend is None:
-                print(f"[Inference] No backend for cam_id={cam_id}, assigning score 0.0")
-                per_cam_scores.append(0.0)
-                frame_scores.append((f, 0.0))
-                continue
-
-            with tb("preprocess", {"ti": trigger_idx, "cam_id": cam_id}):
-                batch = preprocess_batch(
-                    [f],
-                    size=tuple(th_cfg.get("input_size", [512, 512]))
-                )
-
-            with tb("inference", {"ti": trigger_idx, "cam_id": cam_id}):
-                out = backend.predict(batch)
-
-            # ---- Extract scalar score robustly (dict or ImageBatch) ----
-            score = 0.0
-            if isinstance(out, dict):
-                if "pred_score" in out:
-                    score = to_scalar(out["pred_score"])
-                elif "pred_scores" in out:
-                    score = to_scalar(out["pred_scores"])
-                elif "scores" in out:
-                    score = to_scalar(out["scores"])
-            else:
-                if hasattr(out, "pred_score"):
-                    score = to_scalar(out.pred_score)
-                elif hasattr(out, "pred_scores"):
-                    score = to_scalar(out.pred_scores)
-                elif hasattr(out, "scores"):
-                    score = to_scalar(out.scores)
-
-            per_cam_scores.append(score)
-            frame_scores.append((f, score))
-
-        # ---- Fuse + OK/NG logic ----
-        fused = fuse_scores(per_cam_scores)
-        ok = decide(th_cfg.get("ok_threshold", 0.5), fused)
-
-        end_ts = time.perf_counter()
-        elapsed_ms = (end_ts - start_ts) * 1000.0
-
-        # Basic timing log (always)
+        # One aggregate log avoids per-camera synchronous file writes in the hot path.
         jlog("batch_inference", ms=elapsed_ms)
         print(f"batch_inference_time={elapsed_ms:.2f} ms")
 
@@ -209,13 +176,41 @@ def main():
             LOG_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
             ts_for_name = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
 
-            for f, score in frame_scores:
+            for f, score in zip(frames, per_cam_scores):
                 img = f.image
                 cam_id = f.cam_id
                 fname = LOG_IMAGE_DIR / f"{ts_for_name}_ti{trigger_idx:06d}_cam{cam_id}_s{score:.3f}.png"
                 cv2.imwrite(str(fname), img)
 
+    def on_inference_failed(trigger_idx: int, message: str):
+        jlog("batch_inference_failed", trigger_idx=trigger_idx, error=message)
+        print(f"[Inference] TI {trigger_idx} failed: {message}")
+        bus.inference_result.emit(trigger_idx, {
+            "per_cam_scores": [],
+            "fused_score": 1.0,
+            "ok": False,
+            "error": message,
+        })
 
+    inference_thread = QThread()
+    inference_worker = BatchInferenceWorker(
+        backends=backends,
+        input_size=tuple(th_cfg.get("input_size", [280, 280])),
+        threshold=float(th_cfg.get("ok_threshold", 0.5)),
+        dio=dio,
+    )
+    inference_worker.moveToThread(inference_thread)
+    inference_controller = BatchInferenceController(on_inference_completed, on_inference_failed)
+    inference_controller.requested.connect(inference_worker.process, Qt.QueuedConnection)
+    inference_worker.completed.connect(inference_controller.completed, Qt.QueuedConnection)
+    inference_worker.failed.connect(inference_controller.failed, Qt.QueuedConnection)
+    inference_thread.start()
+
+    def on_batch(trigger_idx: int, frames: list):
+        # Submit first so image display work cannot delay the decision path.
+        inference_controller.requested.emit(trigger_idx, frames)
+        for frame in frames:
+            bus.frame_preview.emit(trigger_idx, frame.cam_id, np_to_qimage(frame.image))
 
     coordinator.batch_ready.connect(on_batch)
 
@@ -255,13 +250,18 @@ def main():
         for cw in cam_workers:
             cw.wait(1500)
 
-        # 2) Stop DIO
+        # 2) Finish/cancel inference before closing the DIO handle it may write to.
+        inference_thread.requestInterruption()
+        inference_thread.quit()
+        inference_thread.wait(3000)
+
+        # 3) Stop DIO
         try:
             dio.stop()
         except Exception as e:
             print("[DIO] stop error:", e)
 
-        # 3) Close the window and exit the event loop
+        # 4) Close the window and exit the event loop
         win.close()
         QApplication.instance().quit()
 
@@ -276,6 +276,9 @@ def main():
     for cw in cam_workers:
         cw.stop()
         cw.wait(500)
+    inference_thread.requestInterruption()
+    inference_thread.quit()
+    inference_thread.wait(3000)
     dio.stop()
 
     sys.exit(rc)

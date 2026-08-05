@@ -29,7 +29,7 @@ cameras:
     auto_exposure: False
     auto_gain: False
     auto_whiteBalance: False
-  - serial: "50320434"   # #3
+  - serial: "07620178"   # #3
     model: "DFK 33UX287"
     resolution: [640, 480]
     pixel_format: "Mono8"

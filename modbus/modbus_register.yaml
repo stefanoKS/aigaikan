@@ -1,0 +1,12 @@
+100:
+#The register for the inference command, 0 is not do inference, 1 is do inference
+101:
+#The register that tells the line speed
+102:
+#
+103:
+#
+104:
+#
+105:
+#

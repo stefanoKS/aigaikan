@@ -5,7 +5,12 @@ import os
 import numpy as np
 import torch
 from dataclasses import dataclass
-from typing import Dict
+from typing import Any, Dict
+
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
+
+from app.core.postprocess import decide, fuse_scores
+from app.core.preprocessor import preprocess_batch
 
 try:
     from anomalib.deploy import TorchInferencer as AnomTorchInferencer
@@ -26,8 +31,17 @@ class InferenceBackend:
 
         self.cfg = cfg
         self.device = device if torch.cuda.is_available() else "cpu"
+        if device == "cuda" and self.device != "cuda":
+            print("[InferenceBackend] CUDA requested but unavailable; using CPU inference")
         self._mode = None
         self._runner = None
+
+        if self.device == "cuda":
+            torch.backends.cudnn.benchmark = True
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
+            torch.set_float32_matmul_precision("high")
+
         self._load()
 
     # --------------------------
@@ -56,6 +70,7 @@ class InferenceBackend:
             try:
                 print(f"[InferenceBackend] Loading Anomalib TorchInferencer: {path}")
                 self._runner = AnomTorchInferencer(path=path, device=self.device)
+                self._runner.model.eval()
                 print(f"Load model from path: {path}")
                 self._mode = "anomalib"
                 return
@@ -74,6 +89,7 @@ class InferenceBackend:
                 try:
                     print(f"[InferenceBackend] AUTO: Trying Anomalib for {path}")
                     self._runner = AnomTorchInferencer(path=path, device=self.device)
+                    self._runner.model.eval()
                     self._mode = "anomalib"
                     return
                 except Exception as e:
@@ -84,6 +100,7 @@ class InferenceBackend:
                 try:
                     print(f"[InferenceBackend] AUTO: Trying TorchScript JIT for {path}")
                     self._runner = torch.jit.load(path, map_location=self.device)
+                    self._runner.eval()
                     self._mode = "torchscript"
                     return
                 except Exception as e:
@@ -100,6 +117,7 @@ class InferenceBackend:
         if typ == "torchscript":
             try:
                 self._runner = torch.jit.load(path, map_location=self.device)
+                self._runner.eval()
                 self._mode = "torchscript"
                 return
             except Exception as e:
@@ -119,8 +137,6 @@ class InferenceBackend:
     @torch.inference_mode()
     def predict(self, batch: np.ndarray) -> Dict:
         # batch: (B,C,H,W) float32
-        print(f"[InferenceBackend] Running mode={self._mode}")
-
         if self._mode == "mock":
             scores = batch.mean(axis=(2, 3)).mean(axis=1)
             return {"scores": scores.astype(np.float32)}
@@ -140,3 +156,67 @@ class InferenceBackend:
             return {"scores": np.array(out)}
 
         return {"scores": np.zeros(batch.shape[0], dtype=np.float32)}
+
+
+def extract_score(output: Any) -> float:
+    """Return the one-image anomaly score or fail instead of silently accepting bad output."""
+    for name in ("pred_score", "pred_scores", "scores"):
+        value = output.get(name) if isinstance(output, dict) else getattr(output, name, None)
+        if value is None:
+            continue
+        if isinstance(value, torch.Tensor):
+            value = value.detach().cpu().numpy()
+        return float(np.asarray(value).reshape(-1)[0])
+    raise ValueError(f"Inference output does not contain a supported score: {type(output).__name__}")
+
+
+class BatchInferenceWorker(QObject):
+    """Run CPU/GPU work outside the Qt UI thread while keeping model use serialized."""
+
+    completed = pyqtSignal(int, list, list, float, bool, float)
+    failed = pyqtSignal(int, str)
+
+    def __init__(
+        self,
+        backends: dict[int, InferenceBackend],
+        input_size: tuple[int, int],
+        threshold: float,
+        dio: Any,
+    ):
+        super().__init__()
+        self._backends = backends
+        self._input_size = input_size
+        self._threshold = threshold
+        self._dio = dio
+
+    @pyqtSlot(int, list)
+    def process(self, trigger_idx: int, frames: list) -> None:
+        import time
+
+        start_time = time.perf_counter()
+        try:
+            if QThread.currentThread().isInterruptionRequested():
+                return
+            batch = preprocess_batch(frames, size=self._input_size)
+            scores: list[float] = []
+            for index, frame in enumerate(frames):
+                if QThread.currentThread().isInterruptionRequested():
+                    return
+                backend = self._backends.get(frame.cam_id)
+                if backend is None:
+                    raise RuntimeError(f"No inference backend configured for camera {frame.cam_id}")
+                output = backend.predict(batch[index:index + 1])
+                scores.append(extract_score(output))
+
+            fused = fuse_scores(scores)
+            ok = decide(self._threshold, fused)
+            self._dio.set_ok_ng(ok)
+            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+            self.completed.emit(trigger_idx, frames, scores, fused, ok, elapsed_ms)
+        except Exception as exc:
+            # A failed prediction must never be reported to the PLC as a good product.
+            try:
+                self._dio.set_ok_ng(False)
+            except Exception:
+                pass
+            self.failed.emit(trigger_idx, f"{type(exc).__name__}: {exc}")
