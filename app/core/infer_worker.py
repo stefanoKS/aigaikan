@@ -11,6 +11,7 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 
 from app.core.postprocess import decide, fuse_scores
 from app.core.preprocessor import preprocess_batch
+from app.core.recipes import RecipeRuntime
 
 try:
     from anomalib.deploy import TorchInferencer as AnomTorchInferencer
@@ -175,19 +176,23 @@ class BatchInferenceWorker(QObject):
 
     completed = pyqtSignal(int, list, list, float, bool, float)
     failed = pyqtSignal(int, str)
+    recipe_loaded = pyqtSignal(int, int, int, int)
+    recipe_failed = pyqtSignal(int, int, int, str)
 
     def __init__(
         self,
         backends: dict[int, InferenceBackend],
         input_size: tuple[int, int],
         threshold: float,
-        dio: Any,
+        camera_rois: dict[int, tuple[int, int, int, int]] | None = None,
+        allow_mock_models: bool = False,
     ):
         super().__init__()
         self._backends = backends
         self._input_size = input_size
         self._threshold = threshold
-        self._dio = dio
+        self._camera_rois = camera_rois or {}
+        self._allow_mock_models = allow_mock_models
 
     @pyqtSlot(int, list)
     def process(self, trigger_idx: int, frames: list) -> None:
@@ -197,7 +202,7 @@ class BatchInferenceWorker(QObject):
         try:
             if QThread.currentThread().isInterruptionRequested():
                 return
-            batch = preprocess_batch(frames, size=self._input_size)
+            batch = preprocess_batch(frames, size=self._input_size, camera_rois=self._camera_rois)
             scores: list[float] = []
             for index, frame in enumerate(frames):
                 if QThread.currentThread().isInterruptionRequested():
@@ -210,13 +215,39 @@ class BatchInferenceWorker(QObject):
 
             fused = fuse_scores(scores)
             ok = decide(self._threshold, fused)
-            self._dio.set_ok_ng(ok)
             elapsed_ms = (time.perf_counter() - start_time) * 1000.0
             self.completed.emit(trigger_idx, frames, scores, fused, ok, elapsed_ms)
         except Exception as exc:
-            # A failed prediction must never be reported to the PLC as a good product.
-            try:
-                self._dio.set_ok_ng(False)
-            except Exception:
-                pass
             self.failed.emit(trigger_idx, f"{type(exc).__name__}: {exc}")
+
+    @pyqtSlot(object, int)
+    def reconfigure_recipe(self, runtime: RecipeRuntime, request_sequence: int) -> None:
+        """Load recipe-specific models in the inference thread, behind queued predictions."""
+        try:
+            backends: dict[int, InferenceBackend] = {}
+            for cam_id in range(len(self._backends)):
+                raw = runtime.models.get(f"cam{cam_id + 1}", runtime.models.get(str(cam_id)))
+                if raw is None:
+                    raise ValueError(f"Recipe lacks a model configuration for camera {cam_id}")
+                backend = InferenceBackend(ModelConfig(**raw), device="cuda")
+                if backend._mode == "mock" and not self._allow_mock_models:
+                    raise RuntimeError(f"Model for camera {cam_id} did not load")
+                backends[cam_id] = backend
+            self._backends = backends
+            self._input_size = runtime.input_size
+            self._threshold = runtime.ok_threshold
+            self._camera_rois = runtime.definition.camera_rois
+            mask = sum(1 << cam_id for cam_id in backends)
+            self.recipe_loaded.emit(
+                request_sequence,
+                runtime.definition.recipe_id,
+                runtime.definition.revision,
+                mask,
+            )
+        except Exception as exc:
+            self.recipe_failed.emit(
+                request_sequence,
+                runtime.definition.recipe_id,
+                runtime.definition.revision,
+                f"{type(exc).__name__}: {exc}",
+            )

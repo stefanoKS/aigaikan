@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
     def _setup_ui(self, bus):
         bus.frame_preview.connect(self.on_preview)
         bus.inference_result.connect(self.on_result)
+        bus.status.connect(self.on_status)
 
     def on_preview(self, trigger_idx: int, cam_id: int, qimg: QImage):
         if 0 <= cam_id < len(self.views):
@@ -82,3 +83,15 @@ class MainWindow(QMainWindow):
             self.status_label.setText(msg)
         else:
             self.statusBar().showMessage(msg)
+
+    def on_status(self, status: dict):
+        """Show compact PLC connectivity diagnostics without redesigning the UI."""
+        connected = "PLC connected" if status.get("modbus_connected") else "PLC disconnected"
+        heartbeat = "heartbeat OK" if status.get("plc_heartbeat_valid") else "heartbeat waiting"
+        message = (
+            f"{connected} | {heartbeat} | recipe {status.get('active_recipe_id', 0)} "
+            f"| ready={status.get('inspection_ready', False)} "
+            f"| pending={status.get('result_pending', False)} "
+            f"| error={status.get('error_code', 0)}"
+        )
+        self.statusBar().showMessage(message)

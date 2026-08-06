@@ -1,0 +1,31 @@
+# All register addresses are zero-based Modbus holding-register offsets.
+# Example PLC mapping only: offset 100 may be mapped to Mitsubishi D1000.
+connection:
+  enabled: false
+  host: "192.168.1.10"
+  port: 502
+  device_id: 1
+  poll_interval_ms: 50
+  request_timeout_ms: 500
+  reconnect_interval_ms: 1000
+  heartbeat_interval_ms: 1000
+  heartbeat_timeout_ms: 3000
+  max_consecutive_failures: 3
+
+registers:
+  plc_to_pc:
+    start: 100
+    count: 20
+  pc_to_plc:
+    start: 120
+    count: 30
+
+data_format:
+  uint32_word_order: "low_high"
+  score_scale: 10000
+  line_speed_scale: 100
+
+behavior:
+  require_modbus_for_inspection: true
+  retain_unacknowledged_result: true
+  simulation_mode: false

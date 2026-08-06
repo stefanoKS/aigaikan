@@ -234,6 +234,14 @@ python run.py
 - 完全オフライン用 **モックモデル**
 - GPU 分離のための **ZeroMQ プロセス分割**
 
+---
+
+## Modbus/TCP PLC interface
+
+MELSEC iQ-R integration, zero-based register addressing, recipe/result handshakes,
+heartbeat behavior, the development PLC simulator, and commissioning instructions
+are documented in [docs/modbus_plc_interface.md](docs/modbus_plc_interface.md).
+
 
 ---
 ## ライセンス / クレジット

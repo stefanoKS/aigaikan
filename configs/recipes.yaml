@@ -1,4 +1,10 @@
 recipes:
   default:
-    unwrap: false
-    rois: []
+    id: 0
+    name: "default"
+    revision: 0
+    models_file: "configs/model.yaml"
+    thresholds_file: "configs/thresholds.yaml"
+    # Camera ROI values are [x, y, width, height]. Empty uses the full frame.
+    camera_rois: {}
+    product_parameters: {}

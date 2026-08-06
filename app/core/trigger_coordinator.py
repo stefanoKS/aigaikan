@@ -8,6 +8,7 @@ from PyQt5.QtCore import QObject, QTimer, pyqtSignal
 
 class TriggerCoordinator(QObject):
     batch_ready = pyqtSignal(int, list)  # (trigger_idx, [CameraFrame in cam_id order])
+    partial_batch_dropped = pyqtSignal(int, int)  # (trigger_idx, received_camera_mask)
 
     def __init__(self, num_cams=4, max_hold_ms=8, max_buffer_age_ms=1000):
         super().__init__()
@@ -41,5 +42,7 @@ class TriggerCoordinator(QObject):
             or now - self._created_at[ti] >= self._max_buffer_age_s
         ]
         for ti in to_del:
+            received_camera_mask = sum(1 << cam_id for cam_id in self.buffers[ti])
             del self.buffers[ti]
             del self._created_at[ti]
+            self.partial_batch_dropped.emit(ti, received_camera_mask)

@@ -1,0 +1,1 @@
+"""Automated tests for application protocol components."""
